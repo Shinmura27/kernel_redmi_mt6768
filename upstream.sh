@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Secret Variable for CI
+# Secret Variable for GH ACT
 # KERNEL_NAME | Your kernel name
 # TG_TOKEN | Your Telegram Bot Token
 # TG_CHAT_ID | Your Telegram Channel / Group Chat ID
