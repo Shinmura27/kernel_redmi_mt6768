@@ -1,6 +1,6 @@
 name: Kernel Upstreamer
 on: 
-  workflow_dispatch: y
+  workflow_dispatch:
   schedule:
     - cron:  '0 17 * * 4'
 
