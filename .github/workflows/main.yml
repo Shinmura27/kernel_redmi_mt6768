@@ -12,18 +12,9 @@ jobs:
       - name: Download scripts
         uses: actions/checkout@v2
 
-      - name: add remote
-        run: git remote add upstream https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/
-
-      - name: fetch
-        env: LINUXVER: ${{ secrets.LINUXVER }}
-        run: git fetch upstream $LINUXVER
-
-      - name: fetch head
-        run: git merge FETCH_HEAD
-
       - name: Deploy builder
         env:
+          LINUXVER: ${{ secrets.LINUXVER}}
           KERNEL_NAME: ${{ secrets.KERNEL_NAME}}
           TG_TOKEN: ${{ secrets.TG_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
