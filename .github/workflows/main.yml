@@ -1,5 +1,4 @@
-#
-name: Kernel Upstreamer
+name: Kernel Upstreamer Auto
 on: 
   workflow_dispatch:
   schedule:
