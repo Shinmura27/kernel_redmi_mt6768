@@ -1,23 +1,25 @@
 name: Kernel Upstreamer
-
-on:
-  push:
-    branches: [ base-r-oss ]
-  pull_request:
-    branches: [ base-r-oss ]
+on: 
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 17 * * 4'
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    environment: Actions
     steps:
-    - uses: actions/checkout@v2
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+      - name: Download scripts
+        uses: actions/checkout@v2
+
+      - name: Deploy builder
+        env:
+          LINUXVER: ${{ secrets.LINUXVER}}
+          KERNEL_NAME: ${{ secrets.KERNEL_NAME}}
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          GH_USERNAME: ${{ secrets.GH_USERNAME }}
+          GH_EMAIL: ${{ secrets.GH_EMAIL }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_PUSH_REPO_URL: ${{ secrets.GH_PUSH_REPO_URL }}
+        run: ./upstream.sh
