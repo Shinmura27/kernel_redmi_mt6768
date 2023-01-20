@@ -987,7 +987,7 @@ struct rndis_params *rndis_register(void (*resp_avail)(void *v), void *v)
 	params->resp_avail = resp_avail;
 	params->v = v;
 	params->max_pkt_per_xfer = 1;
-	INIT_LIST_HEAD(&(params->resp_queue));
+	INIT_LIST_HEAD(&params->resp_queue);
 	spin_lock_init(&params->resp_lock);
 	pr_debug("%s: configNr = %d\n", __func__, i);
 
@@ -1089,19 +1089,11 @@ EXPORT_SYMBOL_GPL(rndis_add_hdr);
 
 void rndis_free_response(struct rndis_params *params, u8 *buf)
 {
-	rndis_resp_t *r;
-	struct list_head *act, *tmp;
-
-	if (rndis_debug > 2)
-		RNDIS_DBG("\n");
+	rndis_resp_t *r, *n;
 
 	spin_lock(&params->resp_lock);
-	list_for_each_safe(act, tmp, &(params->resp_queue)) {
-		if (!act)
-			continue;
-
-		r = list_entry(act, rndis_resp_t, list);
-		if (r && r->buf == buf) {
+	list_for_each_entry_safe(r, n, &params->resp_queue, list) {
+		if (r->buf == buf) {
 			list_del(&r->list);
 			kfree(r);
 		}
@@ -1112,14 +1104,12 @@ EXPORT_SYMBOL_GPL(rndis_free_response);
 
 u8 *rndis_get_next_response(struct rndis_params *params, u32 *length)
 {
-	rndis_resp_t *r;
-	struct list_head *act, *tmp;
+	rndis_resp_t *r, *n;
 
 	if (!length) return NULL;
 
 	spin_lock(&params->resp_lock);
-	list_for_each_safe(act, tmp, &(params->resp_queue)) {
-		r = list_entry(act, rndis_resp_t, list);
+	list_for_each_entry_safe(r, n, &params->resp_queue, list) {
 		if (!r->send) {
 			r->send = 1;
 			*length = r->length;
@@ -1149,7 +1139,7 @@ static rndis_resp_t *rndis_add_response(struct rndis_params *params, u32 length)
 	r->send = 0;
 
 	spin_lock(&params->resp_lock);
-	list_add_tail(&r->list, &(params->resp_queue));
+	list_add_tail(&r->list, &params->resp_queue);
 	spin_unlock(&params->resp_lock);
 	return r;
 }
